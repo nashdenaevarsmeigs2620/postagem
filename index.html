@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rastreamento de Importações - Correios</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #003366;
+    }
+    header {
+      background-color: #fff;
+      padding: 10px 20px;
+      border-bottom: 2px solid #FFD100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .menu-icon {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      margin-left: 15px;
+    }
+    .menu-icon div {
+      width: 25px;
+      height: 3px;
+      background-color: #003366;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+    header img {
+      height: 70px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      color: #002244;
+      margin-top: 60px;
+      margin-bottom: 30px;
+    }
+    .tracking-form {
+      background: #e0e0e0;
+      padding: 20px;
+      margin: 0 auto 40px auto;
+      max-width: 550px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .tracking-form label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+      color: #003366;
+      text-align: center;
+      font-size: 18px;
+    }
+    .tracking-form p {
+      margin: 10px 0;
+      color: red;
+      font-size: 14px;
+      text-align: center;
+    }
+    .tracking-form input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      margin: 10px auto;
+      display: block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .tracking-form button {
+      width: 80%;
+      padding: 12px;
+      background-color: #FFD100;
+      color: #003366;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto 0 auto;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .tracking-form button:hover {
+      background-color: #FFC300;
+      transform: scale(1.03);
+    }
+    .banner-box {
+      margin: 0 auto 60px auto;
+      max-width: 1000px;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+    .banner-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      max-height: 300px;
+    }
+    footer {
+      background-color: #FFD100;
+      padding: 40px 20px 20px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+    .footer-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+    }
+    .footer-column {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 200px;
+    }
+    .footer-section {
+      margin-bottom: 30px;
+      width: 100%;
+      text-align: left;
+    }
+    .footer-section h2 {
+      font-size: 20px;
+      color: #003366;
+      margin-bottom: 15px;
+      text-align: left;
+    }
+    .footer-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      color: #003366;
+      font-size: 14px;
+      text-align: left;
+    }
+    .footer-item img {
+      display: none;
+    }
+    .footer-logo img {
+      width: 140px;
+      margin-bottom: 20px;
+    }
+    .footer-bottom {
+      margin-top: 30px;
+      font-size: 13px;
+      color: #0000ff;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* RESPONSIVO */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 26px;
+        margin-top: 40px;
+        margin-bottom: 25px;
+        padding: 0 15px;
+      }
+      .tracking-form {
+        max-width: 90%;
+      }
+      .banner-box img {
+        max-height: 200px;
+      }
+      footer {
+        padding: 30px 15px;
+      }
+      .footer-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+      }
+      .footer-column {
+        max-width: 100%;
+        align-items: center;
+        text-align: center;
+      }
+      .footer-section h2 {
+        text-align: center;
+      }
+      .footer-item {
+        justify-content: center;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 22px;
+        margin-top: 35px;
+        margin-bottom: 20px;
+        padding: 0 10px;
+      }
+      .tracking-form label {
+        font-size: 16px;
+      }
+      .tracking-form input[type="text"],
+      .tracking-form button {
+        width: 90%;
+      }
+      .banner-box img {
+        max-height: 160px;
+      }
+      footer {
+        padding: 20px 10px;
+      }
+      .footer-grid {
+        gap: 20px;
+      }
+      .footer-item {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-container">
+    <img src="correios2.webp" alt="Logo Correios">
+  </div>
+  <div class="menu-icon">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</header>
+
+<h1>Rastreamento de Importações</h1>
+
+<div class="tracking-form">
+  <label for="cpf">Informe seu CPF para iniciar:</label>
+  <input type="text" id="cpf" name="cpf" placeholder="Digite seu CPF" maxlength="14" />
+  <p>Os dados são utilizados para verificar sua encomenda.</p>
+  <button onclick="window.location.href='formulario.html'">Consultar</button>
+</div>
+
+<div class="banner-box">
+  <img src="banner.png" alt="Banner Informativo Correios" />
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-column">
+      <div class="footer-logo">
+        <img src="unnamed.png" alt="Logo Correios Atualizada" />
+      </div>
+    </div>
+    <div class="footer-column">
+      <div class="footer-section">
+        <h2>Atendimento</h2>
+        <div class="footer-item">Fale Conosco</div>
+        <div class="footer-item">Registro de manifestações</div>
+        <div class="footer-item">Central de atendimento</div>
+        <div class="footer-item">Soluções para o seu negócio</div>
+        <div class="footer-item">Suporte ao cliente com contrato</div>
+      </div>
+    </div>
+    <div class="footer-column">
+      <div class="footer-section">
+        <h2>Institucional</h2>
+        <div class="footer-item">Ouvidoria</div>
+        <div class="footer-item">Denúncia</div>
+        <div class="footer-item">Segurança</div>
+        <div class="footer-item">Sobre os Correios</div>
+        <div class="footer-item">Identidade corporativa</div>
+        <div class="footer-item">Educação e cultura</div>
+        <div class="footer-item">Código de Conduta Ética e Integridade</div>
+        <div class="footer-item">Transparência e prestação de contas</div>
+        <div class="footer-item">Sustentabilidade</div>
+        <div class="footer-item">Política de privacidade e cookies</div>
+      </div>
+    </div>
+    <div class="footer-column">
+      <div class="footer-section">
+        <h2>Serviços</h2>
+        <div class="footer-item">Filatelia</div>
+        <div class="footer-item">Informações</div>
+        <div class="footer-item">Loja online dos Correios</div>
+        <div class="footer-item">Postalis</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2025 Correios. Todos os direitos reservados.
+  </div>
+</footer>
+
+<script>
+  document.getElementById('cpf').addEventListener('input', function (e) {
+    let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,3})(\d{0,2})/);
+    e.target.value = !x[2] ? x[1] : x[1] + '.' + x[2] + (x[3] ? '.' + x[3] : '') + (x[4] ? '-' + x[4] : '');
+  });
+</script>
+
+</body>
+</html>

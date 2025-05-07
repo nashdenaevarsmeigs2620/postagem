@@ -1,0 +1,39 @@
+const params = new URLSearchParams(window.location.search);
+const cpf = params.get("cpf");
+
+const chat = document.getElementById("chat");
+
+if (!cpf || cpf.length !== 11) {
+  chat.innerHTML = `<div class="message"><div class="bubble">CPF inválido.</div></div>`;
+} else {
+  const url = `http://api.dbconsultas.com/api/v1/bff45415-5262-43ff-8d1e-a1f91f03ec2b/cpf/${cpf}`;
+
+  fetch(url)
+    .then(response => {
+      if (!response.ok) throw new Error("Erro na resposta da API."); 
+      return response.json();
+    })
+    .then(data => {
+      const nome = data.nome || "Não encontrado";
+      const nascimento = data.data_nascimento || "Não encontrado";
+      const nomeMae = data.nome_mae || "Não encontrado";
+
+      chat.innerHTML = `
+        <div class="message">
+          <div class="avatar"><img src="avatar.png" alt="avatar" /></div>
+          <div class="bubble">
+            <p><strong>Nome:</strong> ${nome}</p>
+            <p><strong>Data de Nascimento:</strong> ${nascimento}</p>
+            <p><strong>Nome da Mãe:</strong> ${nomeMae}</p>
+          </div>
+        </div>
+      `;
+    })
+    .catch(error => {
+      chat.innerHTML = `
+        <div class="message">
+          <div class="bubble">Erro ao consultar API: ${error.message}</div>
+        </div>
+      `;
+    });
+}
